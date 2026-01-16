@@ -4,6 +4,7 @@ import pandas as pd
 
 # Function that normalizes the ticker
 def normalize_ticker(ticker):
+    ticker = str(ticker)
     if ticker.endswith("Q") or ticker.endswith("*"):
         ticker = ticker[:-1]
     ticker = ticker.replace("/", "-").replace(".", "-").strip()
@@ -35,10 +36,11 @@ all_tickers = set()
 # Save all tickers from monthly constituents
 for file in all_files:
     constituents = pd.read_csv("assets\\" + file)
-    cur_tickers = constituents['ticker'].apply(normalize_ticker)
-    cur_tickers = cur_tickers.replace(continuing_entities)
-    cur_tickers = cur_tickers.dropna()
-    cur_tickers = list(cur_tickers)
+    constituents['ticker'] = constituents['ticker'].apply(normalize_ticker)
+    constituents['ticker'] = constituents['ticker'].replace(continuing_entities)
+    constituents['ticker'] = constituents['ticker'].dropna()
+    constituents.to_csv("assets\\" + file, index=False)
+    cur_tickers = list(constituents['ticker'])
     all_tickers.update(cur_tickers)
 
 # Only keep tickers with price data    
